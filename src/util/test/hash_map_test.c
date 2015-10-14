@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "hash_map.h"
+#include "../hash_map.h"
 
 
 int main(int argc, char *argv[])
@@ -52,6 +52,8 @@ int main(int argc, char *argv[])
 		hash_remove(map, keys[i]);
 		printf("current size: %lu\tcapacity: %lu\n", map->size, map->capacity);
 	}
+
+	hash_destroy(map);
 
 	return 0;
 }

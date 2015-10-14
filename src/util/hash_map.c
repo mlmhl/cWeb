@@ -176,3 +176,19 @@ int hash_get(hash_map *map, const char *key, void **value) {
 	*value = n->value;
 	return 0;
 }
+
+
+// current version, hash_destroy always return 0
+int hash_destroy(hash_map *map) {
+	node *head *next;
+	for (size_t i = 0; i < map->size; ++i) {
+		head = map->bucketsi[i];
+		while (head != NULL) {
+			next = head->next;
+			free(head);
+			head = next;
+		}
+	}
+	free(map->buckets);
+	return 0;
+}

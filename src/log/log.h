@@ -14,16 +14,19 @@
 #include "../util/buffer.h"
 
 
-#define DATE 0x01
-#define TIME 0x02
-#define LFILE 0x04
-#define SFILE 0x08
-#define STDFLAG 0x10
+static const int DATE = 0x01;
+static const int TIME = 0x02;
+static const int LFILE = 0x04;
+static const int SFILE = 0x08;
+static const int STDFLAG = 0x10;
 
-#define ERR_LOGGER_ALLOC 0x01
-#define ERR_CREATE_LOG_FILE 0x02
-#define ERR_DESTROY_OUT_FILE 0x04
-#define ERR_DESTROY_MUTEX 0x08
+static const int ERR_LOGGER_ALLOC = 0x01;
+static const int ERR_CREATE_LOG_FILE = 0x02;
+static const int ERR_DESTROY_OUT_FILE = 0x04;
+static const int ERR_DESTROY_MUTEX = 0x08;
+
+
+static const int THR ＝1024;
 
 
 typedef struct {

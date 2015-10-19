@@ -14,10 +14,10 @@
 #include <stddef.h>
 
 
-#define ERR_HASH_ALLOC 0x1;
-#define ERR_HASH_REHASH 0x2;
-#define ERR_HASH_EXIST 0x4;
-#define ERR_HASH_NOTFOUND 0x8;
+static const int ERR_HASH_ALLOC = 0x1;
+static const int ERR_HASH_REHASH = 0x2;
+static const int ERR_HASH_EXIST = 0x4;
+static const int ERR_HASH_NOTFOUND = 0x8;
 
 
 typedef struct Node {

@@ -13,7 +13,7 @@
 #include <stddef.h>
 
 
-#define ERR_BUFFER_ALLOC 0x01;
+static const int ERR_BUFFER_ALLOC = 0x01;
 
 
 typedef struct {

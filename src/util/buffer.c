@@ -39,10 +39,17 @@ static int shrink(buffer *buf) {
 int buffer_init(buffer *buf, size_t capacity) {
 	buf->size = 0;
 	buf->capacity = capacity;
-	buf->pool = (char*)malloc(capacity);
-	if (buf->pool == NULL) {
-		return ERR_BUFFER_ALLOC;
+	
+	if (capacity > 0) {
+		buf->pool = (char*)malloc(capacity);
+		if (buf->pool == NULL) {
+			return ERR_BUFFER_ALLOC;
+		}
 	}
+	else {
+		buf->pool = NULL;
+	}
+
 	return 0;
 }
 

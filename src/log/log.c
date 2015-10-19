@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "log.h"
 
@@ -67,5 +68,14 @@ int logger_destroy(logger *log) {
 		return ERR_DESTROY_MUTEX;
 	}
 	
+	return 0;
+}
+
+
+static int formatTime(logger *log) {
+	const char *time_str = ctime(&(time(NULL)));
+}
+
+static int output(logger *log, const char *tag, const char *content) {
 	return 0;
 }

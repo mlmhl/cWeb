@@ -72,7 +72,7 @@ static int rehash(hash_map *map, size_t cap) {
 }
 
 
-int get_node(hash_map *map, const char *key, node **n) {
+static int get_node(hash_map *map, const char *key, node **n) {
 	unsigned int index = hash(key) % map->capacity;
 	node *head = map->buckets[index];
 	if (head == NULL)
@@ -98,11 +98,16 @@ int hash_init(hash_map *map, size_t capacity) {
 	map->size = 0;
 	map->capacity = capacity;
 	
-	map->buckets = (node**)malloc(sizeof(node*) * capacity);
-	if (map->buckets == NULL)
-		return ERR_HASH_ALLOC;
-	memset(map->buckets, 0, sizeof(node*) * capacity);
-	
+	if (capacity > 0) {
+		map->buckets = (node**)malloc(sizeof(node*) * capacity);
+		if (map->buckets == NULL)
+			return ERR_HASH_ALLOC;
+		memset(map->buckets, 0, sizeof(node*) * capacity);
+	}
+	else {
+		map->buckets = NULL;
+	}
+
 	return 0;
 }
 
@@ -180,9 +185,9 @@ int hash_get(hash_map *map, const char *key, void **value) {
 
 // current version, hash_destroy always return 0
 int hash_destroy(hash_map *map) {
-	node *head *next;
+	node *head, *next;
 	for (size_t i = 0; i < map->size; ++i) {
-		head = map->bucketsi[i];
+		head = map->buckets[i];
 		while (head != NULL) {
 			next = head->next;
 			free(head);

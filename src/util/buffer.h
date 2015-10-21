@@ -34,6 +34,8 @@ int buffer_reduce(buffer *buf, size_t size);
 
 int buffer_destroy(buffer *buf);
 
+size_t buffer_size(buffer *buf);
+
 const char *buf_to_str(buffer *buf);
 
 

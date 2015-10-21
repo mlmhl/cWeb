@@ -13,7 +13,12 @@
 
 
 static int expand(buffer *buf) {
-	buf->capacity *= 2;
+	if (buf->capacity == 0) {
+		buf->capacity = 1;
+	}
+	else {
+		buf->capacity *= 2;
+	}
 	void *old_pool = buf->pool;
 	buf->pool = malloc(buf->capacity);
 	if (buf->pool == NULL)
@@ -32,6 +37,7 @@ static int shrink(buffer *buf) {
 		return ERR_BUFFER_ALLOC;
 	}
 	memcpy(buf->pool, old_pool, buf->size);
+	free(old_pool);
 	return 0;
 }
 
@@ -55,7 +61,7 @@ int buffer_init(buffer *buf, size_t capacity) {
 
 
 int buffer_append(buffer *buf, void *data, size_t size) {
-	if (size > buf->capacity - size) {
+	if (buf->size + size > buf->capacity) {
 		int ret_code = expand(buf);
 		if (ret_code != 0)
 			return ret_code;
@@ -69,7 +75,7 @@ int buffer_append(buffer *buf, void *data, size_t size) {
 
 
 int buffer_reduce(buffer *buf, size_t size) {
-	if (size > buf->size)
+	if (size >= buf->size)
 		buf->size = 0;
 	else
 		buf->size -= size;
@@ -87,6 +93,11 @@ int buffer_reduce(buffer *buf, size_t size) {
 int buffer_destroy(buffer *buf) {
 	free(buf->pool);
 	return 0;
+}
+
+
+size_t buffer_size(buffer *buf) {
+	return buf->size;
 }
 
 

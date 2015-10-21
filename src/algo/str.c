@@ -46,7 +46,7 @@ char *itoa(int value, char *str, int base) {
 	while (val > 0) {
 		int digit = val % base;
 		val /= base;
-		str[--len] = digit + (digit > 9 ? 'A' : '0');
+		str[--len] = digit + (digit > 9 ? 'A' - 10 : '0');
 	}
 
 	return res;

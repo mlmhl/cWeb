@@ -15,10 +15,11 @@
 
 void test_itoa() {
 	char buf[20];
-	int nums[] = {3, 0, -12432543, 852153721, INT_MIN, INT_MAX};
+	int nums[] = {3, 0, 31, INT_MIN, INT_MAX};
 
 	for (int i = 0; i < sizeof(nums) / sizeof(int); ++i) {
 		printf("%s\n", itoa(nums[i], buf, 10));
+		printf("%s\n", itoa(nums[i], buf, 16));
 	}
 }
 
@@ -38,7 +39,7 @@ void test_split() {
 
 int main(int argc, char *argv[]) {
 	test_itoa();
-	test_split();
+	//test_split();
 
 	return 0;
 }

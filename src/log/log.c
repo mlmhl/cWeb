@@ -22,9 +22,9 @@
 int logger_init(logger *log, int flag, const char *out) {
 	log->flag = flag;
 	
-	log->out = open(out, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+	log->out = open(out, O_RDWR | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
 	if (log->out == -1) {
-		return ERR_CREATE_LOG_FILE;
+		return ERR_LOGGER_CREATE_FILE;
 	}
 	
 	// initail buffer
@@ -60,7 +60,7 @@ int logger_init(logger *log, int flag, const char *out) {
 int logger_destroy(logger *log) {
 	int out_ret_code = close(log->out);
 	if (out_ret_code == -1) {
-		return ERR_DESTROY_OUT_FILE;
+		return ERR_LOGGER_DESTROY_FILE;
 	}
 
 	int buffer_ret_code = buffer_destroy(&(log->buf));
@@ -70,7 +70,7 @@ int logger_destroy(logger *log) {
 
 	int lock_ret_code = pthread_mutex_destroy(&(log->lock));
 	if (lock_ret_code > 0) {
-		return ERR_DESTROY_MUTEX;
+		return lock_ret_code;
 	}
 	
 	return 0;
@@ -229,6 +229,28 @@ int logger_printf(logger *log, const char *format, ...) {
 }
 
 
+int logger_warnf(logger *log, const char *format, ...) {
+	va_list start;
+	va_start(start, format);
+	//TODO log will be trunc if length exceed 2048
+	char buf[2048];
+	vsnprintf(buf, 2048, format, start);
+
+	return output(log, "WARN", buf);
+}
+
+
+int logger_errorf(logger *log, const char *format, ...) {
+	va_list start;
+	va_start(start, format);
+	//TODO log will be trunc if length exceed 2048
+	char buf[2048];
+	vsnprintf(buf, 2048, format, start);
+
+	return output(log, "ERORR", buf);
+}
+
+
 int logger_flush(logger *log) {
 	lock(log);
 	size_t size = buffer_size(&(log->buf));
@@ -244,4 +266,28 @@ int logger_flush(logger *log) {
 	}
 
 	return unlock(log);
+}
+
+
+int logger_flag(logger *log) {
+	return log->flag;
+}
+
+int logger_set_flag(logger *log, int flag) {
+	int old_flag = log->flag;
+	log->flag = flag;
+	return old_flag;
+}
+
+
+int logger_set_output(logger *log, const char *out) {
+	int retCode;
+	if ((retCode = close(log->out)) > 0) {
+		return retCode;
+	}
+	if ((log->out = open(out, O_RDWR | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR)) == -1) {
+		return ERR_LOGGER_CREATE_FILE;
+	}
+
+	return 0;
 }

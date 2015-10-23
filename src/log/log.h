@@ -21,9 +21,8 @@ static const int SFILE = 0x08;
 static const int STDFLAG = DATE | TIME | SFILE;
 
 static const int ERR_LOGGER_ALLOC = 0x01;
-static const int ERR_CREATE_LOG_FILE = 0x02;
-static const int ERR_DESTROY_OUT_FILE = 0x04;
-static const int ERR_DESTROY_MUTEX = 0x08;
+static const int ERR_LOGGER_CREATE_FILE = 0x02;
+static const int ERR_LOGGER_DESTROY_FILE = 0x04;
 
 
 static const int THR = 1024;
@@ -49,15 +48,14 @@ int logger_warnf(logger *log, const char *format, ...);
 
 int logger_errorf(logger *log, const char *format, ...);
 
-int logger_debugf(logger *log, const char *format, ...);
-
 int logger_flush();
 
 // return the flag on success, or -1 on error
-int logger_flag();
-int logger_set_flag(int flag);
+int logger_flag(logger *log);
+// return the old flag
+int logger_set_flag(logger *log, int flag);
 
-int logger_set_output(const char *out);
+int logger_set_output(logger *log, const char *out);
 
 
 #endif // LOG_H

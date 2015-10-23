@@ -105,36 +105,31 @@ static int format_time(logger *log) {
 	vector_init(&tsp, 0);
 	
 	time_t ti = time(NULL);
-	lock(log);
 	char *time_str = (char*)(ctime(&(ti)));
 	str_split(time_str, " \n", &tsp);
 	int retCode = 0;
 	if (log->flag & DATE) {
 		// append month
 		if ((retCode = append_time_element(&(log->buf), &tsp, 1)) > 0) {
-			unlock(log);
 			return retCode;
 		}
 		// append day
 		if ((retCode = append_time_element(&(log->buf), &tsp, 2)) > 0) {
-			unlock(log);
 			return retCode;
 		}
 		// append year
 		if ((retCode = append_time_element(&(log->buf), &tsp, 4)) > 0) {
-			unlock(log);
 			return retCode;
 		}
 	}
 	if (log->flag & TIME) {
 		// append time
 		if ((retCode = append_time_element(&(log->buf), &tsp, 3)) > 0) {
-			unlock(log);
 			return retCode;
 		}
 	}
-	
-	return unlock(log);
+
+	return 0;
 }
 
 
@@ -148,31 +143,25 @@ static int append_path_element(buffer *buf, const char *str) {
 
 
 static int format_file_path(logger *log) {
-	lock(log);
-
 	int retCode = 0;
 	if (log->flag & SFILE) {
 		if ((retCode = buffer_append(&(log->buf), "[", 1)) > 0) {
-			unlock(log);
 			return retCode;
 		}
 		if ((retCode = append_path_element(&(log->buf), __FILE__)) > 0) {
-			unlock(log);
 			return retCode;
 		}
 		char line_buf[20];
 		if ((retCode = append_path_element(&(log->buf), itoa(__LINE__, line_buf, 10))) > 0) {
-			unlock(log);
 			return retCode;
 		}
 		buffer_reduce(&(log->buf), 1);
 		if ((retCode = buffer_append(&(log->buf), "] ", 2)) > 0) {
-			unlock(log);
 			return retCode;
 		}
 	}
 
-	return unlock(log);
+	return 0;
 }
 
 
@@ -193,31 +182,39 @@ static int format_tag(buffer *buf, const char *tag) {
 
 static int output(logger *log, const char *tag, const char *content) {
 	int retCode = 0;
-	
+
+	lock(log);
+
 	if ((retCode = format_time(log)) > 0) {
+		unlock(log);
 		return retCode;
 	}
 	if ((retCode = format_file_path(log)) > 0) {
+		unlock(log);
 		return retCode;
 	}
 	if ((retCode = format_tag(&(log->buf), tag)) > 0) {
+		unlock(log);
 		return retCode;
 	}
 
 	retCode = buffer_append(&(log->buf), (void*)content, strlen(content));
 	if (retCode > 0) {
+		unlock(log);
 		return retCode;
 	}
 	retCode = buffer_append(&(log->buf), "\n", 1);
 	if (retCode > 0) {
+		unlock(log);
 		return retCode;
 	}
 
 	if (buffer_size(&(log->buf)) > THR) {
+		unlock(log);
 		return logger_flush(log);
 	}
 
-	return 0;
+	return unlock(log);
 }
 
 
@@ -241,5 +238,10 @@ int logger_flush(logger *log) {
 		return retCode;
 	}
 	
-	return buffer_reduce(&(log->buf), size);
+	if ((retCode = buffer_reduce(&(log->buf), size)) > 0) {
+		unlock(log);
+		return retCode;
+	}
+
+	return unlock(log);
 }

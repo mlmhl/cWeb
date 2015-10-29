@@ -10,19 +10,44 @@
 #define JSON_H
 
 
-enum json_type {
-	Number = 0,
+#include "../../util/vector.h"
+
+
+static const int ERR_JSON_INVALID_TYPE = 0x01;
+
+
+typedef enum {
+	Int = 0,
+	Float,
 	String,
 	Bool,
 	Array,
 	Object,
 	Null,
-};
+}json_type;
 
 
-struct json {
+typedef struct json_node {
+	json_type type;
+	const char *key;
 
-};
+	union {
+		vector*		       arr;	    // Array
+		__int8_t		   value;	// Bool
+		__int64_t		   inumber; // Number
+		double			   fnumber; // Float
+		const char*		   str;	    // String
+		struct json_node*  object;	// Object
+	};
+
+	struct json_node *next;	
+
+}json_node;
+
+
+// invoker should release the memory
+int json_marshal(json_node *n, const char **str);
+int json_unmarshal(const char *str, json_node **n);
 
 
 #endif // JSON_H

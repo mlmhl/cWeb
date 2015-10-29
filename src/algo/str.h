@@ -11,9 +11,16 @@
 
 #include "../util/vector.h"
 
+
+static const int NORMAL = 0x01;
+static const int SCIENCE = 0x02;
+
+
 int str_contains(const char *str, char c);
 
 char *itoa(int value, char *str, int base);
+
+char *ftoa(double value, char *str, int precision, int flag);
 
 void str_split(char *str, const char *delim, vector *res);
 

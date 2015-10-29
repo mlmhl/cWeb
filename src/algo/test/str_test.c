@@ -37,9 +37,37 @@ void test_split() {
 }
 
 
+void test_ftoa() {
+	double value;
+	char buf[50];
+
+	value = 0.0;
+	printf("%s\n", ftoa(value, buf, 6, NORMAL));
+	printf("%s\n", ftoa(value, buf, 6, SCIENCE));
+
+	value = 1.0;
+	printf("%s\n", ftoa(value, buf, 6, NORMAL));
+	printf("%s\n", ftoa(value, buf, 6, SCIENCE));
+
+	value = 1234567.12345678;
+	printf("%s\n", ftoa(value, buf, 6, NORMAL));
+	printf("%s\n", ftoa(value, buf, 6, SCIENCE));
+
+	value = 12345;
+	printf("%s\n", ftoa(value, buf, 6, NORMAL));
+	printf("%s\n", ftoa(value, buf, 6, SCIENCE));
+
+	value = 12345.6789;
+	printf("%s\n", ftoa(value, buf, 6, NORMAL));
+	printf("%s\n", ftoa(value, buf, 10, SCIENCE));
+
+}
+
+
 int main(int argc, char *argv[]) {
-	test_itoa();
+	//test_itoa();
 	//test_split();
+	test_ftoa();
 
 	return 0;
 }

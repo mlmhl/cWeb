@@ -6,6 +6,7 @@
   */
 
 #include <stddef.h>
+#include <math.h>
 
 #include "str.h"
 #include "../util/vector.h"
@@ -47,6 +48,115 @@ char *itoa(int value, char *str, int base) {
 		int digit = val % base;
 		val /= base;
 		str[--len] = digit + (digit > 9 ? 'A' - 10 : '0');
+	}
+
+	return res;
+}
+
+
+char *ftoa(double value, char *str, int precision, int flag) {
+	if (value == 0.0) {
+		*str = '0';
+		*(str + 1) = '\0';
+		return str;
+	}
+	
+	if (precision <= 0) {
+		return NULL;
+	}
+	if (value < 0) {
+			value = -value;
+			*str++ = '-';
+	}
+	char *res = str;
+
+	if (flag == NORMAL) {	
+		long long integer = (long long)value;
+		long long tmp = integer;
+		int cnt = 0;
+		while (tmp > 0) {
+			++cnt;
+			tmp /= 10;
+		}
+
+		str += cnt;
+		tmp = integer;
+		while (tmp > 0) {
+			*(--str) = '0' + tmp % 10;
+			tmp /= 10;
+		}
+
+		str += cnt;
+		integer = (value - integer) * pow(10, precision);
+		if (integer > 0) {
+			*str++ = '.';
+			str += precision;
+			while (integer > 0) {
+				*(--str)= '0' + integer % 10;
+				integer /= 10;
+			}
+		}
+		str += precision;
+		*str = '\0';
+	}
+	else if (flag == SCIENCE) {
+		int exp = 0;
+		--precision;
+		if (value >= 1) {
+			long long integer = (long long)value;
+			while (integer > 10) {
+				++exp;
+				integer /= 10;
+			}
+			*str++ = '0' + integer;
+			if (precision > 0) {
+				*str++ = '.';
+				int tmp = exp;
+				if (tmp >= precision) {
+					while (tmp >= precision) {
+						--tmp;
+						value /= 10;
+					}
+				}
+				else {
+					while (tmp < precision) {
+						++tmp;
+						value *= 10;
+					}
+				}
+				integer = (long long)value;
+				while (tmp > 0) {
+					str[--tmp] = '0' + integer % 10;
+					integer /= 10;
+				}
+				str += precision;
+			}
+		}
+		else {
+			while (value < 1) {
+				--exp;
+				value *= 10;
+			}
+			*str++ = '0' + (int)value;
+			if (precision > 0) {
+				*str++ = '.';
+				while (precision-- > 0) {
+					value -= (int)value;
+					value *= 10;
+					*str++ = '0' + (int)value;
+				}
+			}
+		}
+		
+		if (*(str - 1) == '0') {
+			while (*(--str) == '0');
+			++str;
+		}
+		*str++ = 'e';
+		itoa(exp, str, 10);
+	}
+	else {
+		res = NULL;
 	}
 
 	return res;

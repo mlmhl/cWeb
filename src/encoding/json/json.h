@@ -14,6 +14,7 @@
 
 
 static const int ERR_JSON_INVALID_TYPE = 0x01;
+static const int ERR_JSON_INVALID_DATA = 0x02;
 
 
 typedef enum {

@@ -6,6 +6,7 @@
   */
 
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "json.h"
@@ -34,7 +35,7 @@ static int marshal_int(json_node *n, buffer *buf) {
 static int marshal_float(json_node *n, buffer *buf) {
 	int retCode;
 	char str[50];
-	ftoa(n->fnumber, str, 10, SCIENCE);
+	sprintf(str, "%g", n->fnumber);
 	if ((retCode = buffer_append(buf, str, strlen(str))) > 0) {
 		return retCode;
 	}
@@ -120,7 +121,8 @@ static int marshal_tag(json_node *n, buffer *buf) {
 }
 
 typedef int(*marshal_handle)(json_node *n, buffer *buf);
-static marshal_handle handles[] = {marshal_int, marshal_float, marshal_str, marshal_bool, marshal_array, marshal_object, marshal_null};
+static marshal_handle handles[] = {marshal_int, marshal_float, marshal_str,
+	marshal_bool, marshal_array, marshal_object, marshal_null};
 
 
 static int marshal_recursive(json_node *n, buffer *buf) {
@@ -177,18 +179,94 @@ int json_marshal(json_node *n, const char **str) {
 }
 
 
+
+static int unmarshal_recursive(const char *strm json_node **node_ptr);
+
+
+static int unmarshal_object(const char *str, json_node **node_ptr) {
+	if (*(++str) == '}') {
+		*node_ptr = NULL;
+		return 0;
+	}
+
+	int retCode;
+	json_node *n = malloc(sizeof(json_node));
+	const char *cur = str;
+	while (*cur != ':') {
+		++cur;
+	}
+	n->key = malloc(cur - str + 1);
+	memcpy(n->key, str, cur - str);
+	n->key[cur - str] = '\0';
+	if ((retCode = unmarshal_recursive(++cur, &n)) > 0) {
+		return retCode;
+	}
+	
+}
+
+
 static int unmarshal_recursive(const char *str, json_node **node_ptr) {
 	int retCode;
 	json_node *n = malloc(sizeof(json_node));
-
+	
 	if (*str == '{') {
 		n->type = Object;
-		if ((retCode = unmarshal_object(++str, &(n->object))) > 0) {
+		if ((retCode = unmarshal_object(str, &(n->object))) > 0) {
 			free(n);
 			return retCode;
 		}
 	}
-	else if ()
+	else if (*str == '[') {
+		n->type = Array;
+		if ((retCode = umarshal_array(str, &n)) > 0) {
+			free(n);
+			return retCode;
+		}
+	}
+	else if (*str == '\"') {
+		char *tmp = str;
+		while (++tmp != '\"');
+		if (*tmp == '\0' || *(tmp + 1) != '\"') {
+			free(n);
+			return ERR_JSON_INVALID_DATA;
+		}
+		n->type = String;
+		int len = tmp - str;
+		n->str = malloc(len + 1);
+		memcpy(n->str, str + 1, len);
+		*(str + len) =  '\0';
+	}
+	else if (strcmp(str, "null") == 0) {
+		n->type = Null;
+	}
+	else if (strcmp(str, "true") == 0) {
+		n->type = Bool;
+		n->value = 1;
+	}
+	else if (strcmp(str, "false") == 0) {
+		n->type = Bool;
+		n->value = 0;
+	}
+	else {
+		char *end_ptr;
+		long long n->inumber = strtol(str, &end_ptr, 10);
+		if (*end_ptr == '\0') {
+			n->type = Int;
+		}
+		else {
+			n->fnumber = strtod(str, &end_ptr);
+			if (*end_ptr != '\0') {
+				free(n);
+				return Float;
+			}
+			n->type = Float;
+		}
+	}
+	else {
+		return ERR_JSON_INVALID_DATA;
+	}
+
+	return 0;
 }
 
 

@@ -142,17 +142,17 @@ static int append_path_element(buffer *buf, const char *str) {
 }
 
 
-static int format_file_path(logger *log) {
+static int format_file_path(logger *log, const char *filename, int line) {
 	int retCode = 0;
 	if (log->flag & SFILE) {
 		if ((retCode = buffer_append(&(log->buf), "[", 1)) > 0) {
 			return retCode;
 		}
-		if ((retCode = append_path_element(&(log->buf), __FILE__)) > 0) {
+		if ((retCode = append_path_element(&(log->buf), filename)) > 0) {
 			return retCode;
 		}
 		char line_buf[20];
-		if ((retCode = append_path_element(&(log->buf), itoa(__LINE__, line_buf, 10))) > 0) {
+		if ((retCode = append_path_element(&(log->buf), itoa(line, line_buf, 10))) > 0) {
 			return retCode;
 		}
 		buffer_reduce(&(log->buf), 1);
@@ -180,7 +180,7 @@ static int format_tag(buffer *buf, const char *tag) {
 }
 
 
-static int output(logger *log, const char *tag, const char *content) {
+static int output(logger *log, const char *tag, const char *content, const char *filename, int line) {
 	int retCode = 0;
 
 	lock(log);
@@ -189,7 +189,7 @@ static int output(logger *log, const char *tag, const char *content) {
 		unlock(log);
 		return retCode;
 	}
-	if ((retCode = format_file_path(log)) > 0) {
+	if ((retCode = format_file_path(log, filename, line)) > 0) {
 		unlock(log);
 		return retCode;
 	}
@@ -218,36 +218,34 @@ static int output(logger *log, const char *tag, const char *content) {
 }
 
 
-int logger_printf(logger *log, const char *format, ...) {
+int logger_printf_execute(logger *log, const char *filename, int line, const char *format, ...) {
+	//TODO log will be trunc if length exceed 2048
 	va_list start;
 	va_start(start, format);
-	//TODO log will be trunc if length exceed 2048
 	char buf[2048];
 	vsnprintf(buf, 2048, format, start);
 
-	return output(log, "INFO", buf);
+	return output(log, "INFO", buf, filename, line);
 }
 
-
-int logger_warnf(logger *log, const char *format, ...) {
+int logger_warnf_execute(logger *log, const char *filename, int line, const char *format, ...) {
+	//TODO log will be trunc if length exceed 2048
 	va_list start;
 	va_start(start, format);
-	//TODO log will be trunc if length exceed 2048
 	char buf[2048];
 	vsnprintf(buf, 2048, format, start);
 
-	return output(log, "WARN", buf);
+	return output(log, "WARN", buf, filename, line);
 }
 
-
-int logger_errorf(logger *log, const char *format, ...) {
+int logger_errorf_execute(logger *log, const char *filename, int line, const char *format, ...) {	
+	//TODO log will be trunc if length exceed 2048
 	va_list start;
 	va_start(start, format);
-	//TODO log will be trunc if length exceed 2048
 	char buf[2048];
 	vsnprintf(buf, 2048, format, start);
 
-	return output(log, "ERORR", buf);
+	return output(log, "ERORR", buf, filename, line);
 }
 
 

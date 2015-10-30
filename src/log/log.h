@@ -9,6 +9,7 @@
 #define LOG_H
 
 
+#include <stdarg.h>
 #include <pthread.h>
 
 #include "../util/buffer.h"
@@ -42,11 +43,15 @@ int logger_init(logger *log, int flag, const char *out);
 
 int logger_destroy(logger *log);
 
-int logger_printf(logger *log, const char *format, ...);
 
-int logger_warnf(logger *log, const char *format, ...);
+int logger_printf_execute(logger *log, const char *filename, int line, const char *format, ...);
+int logger_warnf_execute(logger *log, const char *filename, int line, const char *format, ...);
+int logger_errorf_execute(logger *log, const char *filename, int line, const char *format, ...);
 
-int logger_errorf(logger *log, const char *format, ...);
+#define logger_printf(log, format, ...) logger_printf_execute(log, __FILE__, __LINE__, format, __VA_ARGS__)
+#define logger_warnf(log, format, ...) logger_warnf_execute(log, __FILE__, __LINE__, format, __VA_ARGS__)
+#define logger_errorf(log, format, ...) logger_errorf_execute(log, __FILE__, __LINE__, format, __VA_ARGS__)
+
 
 int logger_flush();
 

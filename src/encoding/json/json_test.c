@@ -7,18 +7,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "json.h"
 
 
-int main(int argc, char *argv[]) {
-	json_node node;
-	node.type = Object;
-	node.key = "Root";
-	node.next = NULL;
+void marshal_test() {
+	json_node *node = new_json_node();
+	node->type = Object;
+	node->key = "Root";
+	node->next = NULL;
 
 	json_node *elem = malloc(sizeof(json_node));
-	node.object = elem;
+	node->object = elem;
 	
 	elem->type = Int;
 	elem->key = "Int";
@@ -80,14 +81,53 @@ int main(int argc, char *argv[]) {
 
 
 	const char *data = NULL;
-	int retCode = json_marshal(&node, &data);
+	int retCode = json_marshal(node, &data);
 	if (retCode > 0) {
 		printf("%d\n", retCode);
 	}
 	else {
 		printf("%s\n", data);
 		free((void*)data);
+		// As node is not allocated in the heap totally, so we can't destroy it
+		//destroy_json_node(node);
 	}
+}
+
+
+void unmarshal_test() {
+	const char *data = "{Int:3,Float:12345.7,String:\"hello world\",Bool:true,Array:[Array1:1024,Array2:\"hello 世界\"],Object:{Object1:123,Object2:\"object test\"}}";
+	json_node *n;
+
+	int retCode = json_unmarshal(data, &n);
+	if (retCode > 0) {
+		printf("unmarshal error: %d\n", retCode);
+	}
+	else {
+		const char *rdata;
+		retCode = json_marshal(n, &rdata);
+		if (retCode > 0) {
+			printf("marshal error: %d\n", retCode);
+		}
+		else {
+			if (strcmp(data, rdata) != 0) {
+				printf("%s unequal %s\n", rdata, data);
+			}
+			else {
+				printf("successed\n");
+			}
+			free((void*)rdata);
+			destroy_json_node(n);
+		}
+	}
+}
+
+
+int main(int argc, char *argv[]) {
+	// test marshal
+	marshal_test();
+
+	// test unmarshal
+	unmarshal_test();
 	
 	return 0;
 }

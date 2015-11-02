@@ -14,11 +14,15 @@
 
 
 static const int ERR_JSON_INVALID_TYPE = 0x01;
-static const int ERR_JSON_INVALID_DATA = 0x02;
+static const int ERR_JSON_INVALID_TAG = 0x02;
+static const int ERR_JSON_INVALID_STRING = 0x04;
+static const int ERR_JSON_INVALID_NUMBER = 0x08;
+static const int ERR_JSON_INVALID_OBJECT = 0x10;
+static const int ERR_JSON_INVALID_ARRAY = 0x20;
 
 
 typedef enum {
-	Int = 0,
+	Int = 1,
 	Float,
 	String,
 	Bool,
@@ -46,7 +50,10 @@ typedef struct json_node {
 }json_node;
 
 
-// invoker should release the memory
+// json_node should be created in the heap totally
+// invoker should invoke destroy_json_node
+json_node *new_json_node();
+void destroy_json_node(json_node *n);
 int json_marshal(json_node *n, const char **str);
 int json_unmarshal(const char *str, json_node **n);
 

@@ -27,6 +27,7 @@ int vector_init(vector *v, size_t capacity);
 int vector_destroy(vector *v);
 
 int vector_length(vector *v);
+void vector_clear(vector *v);
 
 int v_push_ptr(vector *v, void *p);
 int v_pop_ptr(vector *v, void **p);

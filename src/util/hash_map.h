@@ -20,10 +20,10 @@ static const int ERR_HASH_EXIST = 0x4;
 static const int ERR_HASH_NOTFOUND = 0x8;
 
 
-typedef struct Node {
+typedef struct node {
 	const char *key;
 	void *value;
-	struct Node *next;
+	struct node *next;
 }node;
 
 
@@ -46,7 +46,7 @@ int hash_remove(hash_map *map, const char *key);
 
 int hash_update(hash_map *map, const char *key, void *value);
 
-int hash_get(hash_map *map, const char *key, void **value);
+int hash_get(const hash_map *map, const char *key, void **value);
 
 int hash_destroy(hash_map *map);
 

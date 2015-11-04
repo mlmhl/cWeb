@@ -24,5 +24,7 @@ char *ftoa(double value, char *str, int precision, int flag);
 
 void str_split(char *str, const char *delim, vector *res);
 
+char *sstrncpy(char *dest, const char *src, size_t len);
+
 
 #endif // STR_H

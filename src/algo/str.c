@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <math.h>
+#include <string.h>
 
 #include "str.h"
 #include "../util/vector.h"
@@ -185,4 +186,11 @@ void str_split(char *str, const char *delim, vector *res) {
 		}
 		*str++ = '\0';
 	}
+}
+
+
+char *sstrncpy(char *dest, const char *src, size_t len) {
+	memcpy(dest, src, len);
+	*(dest + len) = '\0';
+	return dest;
 }

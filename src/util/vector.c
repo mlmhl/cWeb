@@ -49,13 +49,22 @@ int vector_init(vector *v, size_t capacity) {
 
 
 int vector_destroy(vector *v) {
+	vector_clear(v);
 	free(v->data);
+	v->data = NULL;
+	v->capacity = 0;
 	return 0;
 }
 
 
 int vector_length(vector *v) {
 	return v->num;
+}
+
+
+void vector_clear(vector *v) {
+	v->num = 0;
+	v->size = 0;
 }
 
 

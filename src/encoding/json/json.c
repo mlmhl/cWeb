@@ -242,11 +242,10 @@ static int unmarshal_tag(const char **str_ptr, json_node *n) {
 	if (*cur == '\0') {
 		return ERR_JSON_INVALID_TAG;
 	}
-	
-	char *tmp = malloc(cur - str + 1);
-	memcpy((void*)tmp, str, cur - str);
-	tmp[cur - str] = '\0';
-	n->key = tmp;
+
+	int len = cur - str;
+	n->key = malloc(len + 1);
+	sstrncpy((char*)(n->key), str, len);
 	*str_ptr = cur + 1;
 	return 0;
 }
@@ -263,8 +262,7 @@ static int unmarshal_string(const char **str_ptr, json_node *n) {
 	n->type = String;
 	int len = tmp - *str_ptr - 1;
 	n->str = malloc(len + 1);
-	memcpy((void*)(n->str), *str_ptr + 1, len);
-	*((char*)(n->str + len)) =  '\0';
+	sstrncpy((char*)(n->str), *str_ptr + 1, len);
 	*str_ptr += len + 2;	// update start of data
 	return 0;
 }

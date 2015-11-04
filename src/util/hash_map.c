@@ -72,7 +72,7 @@ static int rehash(hash_map *map, size_t cap) {
 }
 
 
-static int get_node(hash_map *map, const char *key, node **n) {
+static int get_node(const hash_map *map, const char *key, node **n) {
 	unsigned int index = hash(key) % map->capacity;
 	node *head = map->buckets[index];
 	if (head == NULL)
@@ -173,7 +173,7 @@ int hash_update(hash_map *map, const char *key, void *value) {
 }
 
 
-int hash_get(hash_map *map, const char *key, void **value) {
+int hash_get(const hash_map *map, const char *key, void **value) {
 	node *n = NULL;
 	int res = get_node(map, key, &n);
 	if (res != 0)

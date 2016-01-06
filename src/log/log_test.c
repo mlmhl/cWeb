@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
 	if (retCode > 0) {
 		printf("print error: %d\n", retCode);
 	}
-	retCode = logger_printf(log, "My girl friend is %s, I love her.", "guoshuai");
+	retCode = logger_printf(log, "My girl friend is %s, I love her.", "menghanlin");
 	if (retCode > 0) {
 		printf("print error: %d\n", retCode);
 	}
